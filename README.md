@@ -1,38 +1,6 @@
-# client
+Build a simple gallery page. The images should be fetched from flickr's API. Allow search, and implement pagination using infinite scroll. When one of the found images is clicked, it should pop-up (modal style), and expose navigation arrows to next/prev image.
 
-## Project setup
-```
-npm install
-```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
 
-### Compiles and minifies for production
-```
-npm run build
-```
 
-### Lints and fixes files
-```
-npm run lint
-```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
-# gallery-task
-# gallery-task
-# gallery-task
-# gallery-task
-# gallery-task
-# gallery-task
-# gallery-task
-# gallery-task
-# gallery-task
-# gallery-task
-# gallery-task
-# gallery-task
-# gallery-task
-# gallery-task
