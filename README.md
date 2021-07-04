@@ -29,3 +29,4 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 # gallery-task
 # gallery-task
 # gallery-task
+# gallery-task
