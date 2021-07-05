@@ -5,12 +5,12 @@
         Search:
         <input v-model="flickrParams.tags" type="text" class="search-input" />
       </label>
-      <button type="submit" class="go-button" @click.prevent="search">
+      <button type="submit" class="search-button" @click.prevent="handleBtnSearch">
         Search
       </button>
     </form>
     <p v-if="error" class="error-msg">Failed to fetch data</p>
-    <div v-if="images.length" v-observe-visibility="visibilityChanged" class="list-container">
+    <div class="list-container">
       <p v-if="loading" class="loading-text">Loading...</p>
       <ul
         v-else
@@ -21,7 +21,7 @@
           @eventname="updateparent"
           v-for="(image, index) in images"
           :imageIndex="index"
-          :key="image.id"
+          :key="image.id+index"
           :image="image"
         />
       </ul>
@@ -54,6 +54,7 @@
         </template>
       </modal>
     </div>
+    <div v-show="show"  v-if="images.length" v-observe-visibility="visibilityChanged"/>
   </div>
 </template>
 
@@ -73,6 +74,7 @@ export default {
       error: '',
       loading: true,
       images: [],
+      show: true,
       modalData: {},
       flickrParams: {
         page: 1,
@@ -82,25 +84,45 @@ export default {
       }
     }
   },
-  async created () {
-    await this.search()
-  },
   async mounted () {
-    await this.search()
+    await this.loadData()
   },
+
   methods: {
-    // async visibilityChanged () {
-    //   if (!this.error) {
-    //     this.flickrParams.page += 1
-    //     await this.search()
-    //   }
-    // },
-    async search () {
+    async visibilityChanged (isVisible) {
+      if (!isVisible) {
+        return
+      }
+      this.flickrParams.page = this.flickrParams.page + 1
+      const isConcatImages = true
+      await this.handleUnCacheSearch(isConcatImages)
+    },
+    async loadData () {
+      const cacheData = sessionStorage.getItem(this.flickrParams.tags.toString())
+      !cacheData ? await this.handleUnCacheSearch() : this.handleCacheSearch(cacheData)
+    },
+    async handleBtnSearch () {
       this.loading = true
+      this.flickrParams.page = 1
+      this.show = false
+      await this.loadData()
+    },
+    handleCacheSearch (cacheData) {
+      cacheData = JSON.parse(cacheData)
+      const { images, page } = cacheData
+      this.images = images
+      this.flickrParams.page = page
+      this.show = true
+      this.loading = false
+    },
+    async handleUnCacheSearch (isConcatImages) {
       try {
         const res = await fetchFlickr('flickr.photos.search', this.flickrParams)
-        this.images = res.data
+        this.images = isConcatImages ? [...this.images, ...res.data] : res.data
+        const cacheData = { images: this.images, page: this.flickrParams.page }
+        sessionStorage.setItem(this.flickrParams.tags, JSON.stringify(cacheData))
         this.error = ''
+        this.show = true
       } catch (e) {
         this.error = 'failed to fetch data'
         this.images = []
@@ -109,7 +131,6 @@ export default {
       this.loading = false
     },
     updateparent (modalData) {
-      console.log('modalData', modalData)
       this.modalData = modalData
       this.$refs.modalName.openModal()
     },
@@ -174,7 +195,7 @@ export default {
   color: #30419B;
   font-weight: bold;
 }
-.go-button{
+.search-button{
   background: #30419b;
   border-radius: 8px;
   width: 100px;
