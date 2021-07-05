@@ -79,7 +79,6 @@ export default {
       flickrParams: {
         page: 1,
         tags: 'dog',
-        perPage: 30,
         extras: 'url_n'
       }
     }

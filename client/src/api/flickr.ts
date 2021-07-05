@@ -1,20 +1,29 @@
 import axios from 'axios'
 
-interface ServerResponse {
-  data: any
+interface FlickrImage {
+  farm: number
+  id: string
+  isfamily: number
+  isfriend: number
+  ispublic: number
+  owner: string
+  secret: string
+  server: string
+  title: string
 }
-
+enum FlickrMethod {
+  searchPhotos = 'flickr.photos.search',
+}
 const server = 'http://localhost:5000' || process.env.server
 const url = `${server}/api/flickr/search`
 const fetchFlickr = async (
-  flickrMethod: string,
+  flickrMethod: FlickrMethod,
   flickrParams: {
     tags:string,
     page:number,
-    perPage:number,
     extras:string
   }
-): Promise<ServerResponse> =>
+): Promise<FlickrImage []> =>
   axios.get(url, {
     params: {
       method: flickrMethod,
