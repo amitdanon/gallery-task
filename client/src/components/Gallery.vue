@@ -98,10 +98,14 @@ export default {
       await this.handleUnCacheSearch(isConcatImages)
     },
     async loadData () {
+      this.error = ''
       const cacheData = sessionStorage.getItem(this.flickrParams.tags.toString())
       !cacheData ? await this.handleUnCacheSearch() : this.handleCacheSearch(cacheData)
     },
     async handleBtnSearch () {
+      if (!this.flickrParams.tags) {
+        return this.handleFetchError()
+      }
       this.loading = true
       this.flickrParams.page = 1
       this.show = false
@@ -121,14 +125,16 @@ export default {
         this.images = isConcatImages ? [...this.images, ...res.data] : res.data
         const cacheData = { images: this.images, page: this.flickrParams.page }
         sessionStorage.setItem(this.flickrParams.tags, JSON.stringify(cacheData))
-        this.error = ''
         this.show = true
       } catch (e) {
-        this.error = 'failed to fetch data'
-        this.images = []
-        this.flickrParams.page = 1
+        this.handleFetchError()
       }
       this.loading = false
+    },
+    handleFetchError () {
+      this.error = 'failed to fetch data'
+      this.images = []
+      this.flickrParams.page = 1
     },
     updateparent (modalData) {
       this.modalData = modalData
